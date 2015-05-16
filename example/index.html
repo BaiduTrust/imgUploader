@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title></title>
+    <link rel="stylesheet" href="../src/uploader.less">
+    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-6-6/esl.js"></script>
+    <script src="./jquery.js"></script>
+</head>
+<body>
+<h2>imgUploader上传组件</h2>
+<div id="uploader">
+    <div class="kb-uploader">
+        <p class="uploader-title">
+            <label class="title-name">上传图片</label>
+        </p>
+        <div class="queue-list">
+            <div class="placeholder">
+                <div class="file-picker"></div>
+                <p class="drag-tip">拖放图片到这里</p>
+            </div>
+        </div>
+        <div class="status-bar" style="display:none;">
+            <div class="progress">
+                <span class="text">0%</span>
+                <span class="percentage"></span>
+            </div><div class="info"></div>
+            <div class="btns">
+                <em>（审核后可见）</em>
+            </div>
+        </div>
+    </div>
+    <div class="kb-upload-tip">最多可上传3张图片，图片类型应为jpg、png、gif、bmp，单张大小不超过2M</div>
+</div>
+<br><br><br>
+<p id="states">未上传</p>
+<ul id="upload-list"></ul>
+<script>
+require.config({
+    packages: [
+        {
+            name: 'uploader',
+            location: '../src',
+            main: 'main'
+        }
+    ]
+});
+
+require(['uploader'], function (Uploader) {
+    new Uploader({
+        main: '#uploader',
+        server: './fileuploadajax.php',
+        fileNumLimit: 3,
+        onStart: function () {
+            $('#states').html('开始上传');
+        },
+        onFinished: function (files) {
+            $('#states').html('所有文件上传完成');
+            var tplArr = [];
+
+            var liTpl = $.each(files, function(i, item) {
+                tplArr.push('<li>' + item.info + '</li>');
+            });
+
+            $('#upload-list').html(tplArr.join(''));
+        }
+    });
+});
+
+</script>
+</body>
+</html>
