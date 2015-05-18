@@ -3,20 +3,18 @@
  * @author chengong03(chengong03@baidu.com)
  * @date 2015-05-05
  */
-
-require.config({
-    packages: [
-        {
-            name: 'webuploader',
-            location: '../dep/webuploader',
-            main: 'webuploader'
-        }
-    ]
-});
-
+// require.config({
+//     packages: [
+//         {
+//             name: 'webuploader',
+//             location: '../dep/webuploader',
+//             main: 'webuploader'
+//         }
+//     ]
+// });
 define(function (require) {
 
-    var WebUploader = require('webuploader');
+    var WebUploader = require('../dep/webuploader/webuploader');
     var lib = require('./lib');
 
     /**
@@ -100,7 +98,7 @@ define(function (require) {
 
             this.opts = opts || {};
 
-            var main = opts.main;
+            var main = $(opts.main);
 
             this.opts.btnAddId = 'add-btn-' + lib.randomString(6);
 
@@ -108,26 +106,26 @@ define(function (require) {
             this.uploader = null;
 
             var queue = $('<ul class="filelist"><div id="' + this.opts.btnAddId + '"></div></ul>');
-            queue.appendTo($(main).find('.queue-list'));
+            queue.appendTo(main.find('.queue-list'));
 
             // 组件元素
             this.elements = {
                 // 上传组件最外层dom
-                main: opts.main,
+                main: main,
                 // 上传组件容器
-                wrap: $(main).find('.kb-uploader'),
+                wrap: main.find('.kb-uploader'),
                 // 图片容器
                 queue: queue,
                 // 状态栏
-                statusBar: $(main).find('.status-bar'),
+                statusBar: main.find('.status-bar'),
                 // 文件总体选择信息
-                info: $(main).find('.info'),
+                info: main.find('.info'),
                 // 上传按钮
-                upload: $(main).find('.upload-btn'),
+                upload: main.find('.upload-btn'),
                 // 没选择文件之前的内容
-                placeHolder: $(main).find('.placeholder'),
+                placeHolder: main.find('.placeholder'),
                 // 进度条
-                progress: $(main).find('.progress')
+                progress: main.find('.progress')
             };
 
             // 添加的文件数量
@@ -165,18 +163,18 @@ define(function (require) {
 
             var defaultOpts = {
                 pick: {
-                    id: $(main).find('.file-picker'),
+                    id: main.find('.file-picker'),
                     label: '点击选择图片'
                 },
                 formData: {
                     uid: 'koubei'
                 },
                 auto: true,
-                dnd: $(main).find('.kb-uploader'),
-                paste: $(main).find('.kb-uploader'),
+                dnd: main.find('.kb-uploader'),
+                paste: main.find('.kb-uploader'),
                 // TODO 编译时需要替换swf中的地址
-                swf: '/src/common/swf/Uploader.swf',
-                imgPrevSwf: '/src/common/swf/showPicDemo.swf',
+                swf: '/src/swf/Uploader.swf',
+                imgPrevSwf: '/src/swf/showPicDemo.swf',
                 chunked: false,
                 chunkSize: 512 * 1024,
                 sendAsBinary: true,
@@ -211,9 +209,19 @@ define(function (require) {
 
                 // 不支持html5的不出拖拽提示
                 if (!(window.Blob && window.FileReader && window.DataView)) {
-                    $(main).find('.drag-tip').hide();
+                    main.find('.drag-tip').hide();
                 }
             }
+        },
+
+        /**
+         * 销毁控件
+         *
+         * @public
+         */
+        dispose: function () {
+            this.elements.main.html('');
+            this.unbindDomEvent();
         },
 
         /**
@@ -363,6 +371,7 @@ define(function (require) {
         /**
          * 显示上传错误
          *
+         * @private
          * @param {string} code 错误代码
          */
         showUploadErrorTip: function (code) {
@@ -374,8 +383,11 @@ define(function (require) {
             };
             alert(tipMap[code]);
         },
+
         /**
          * 相关dom事件处理
+         *
+         * @private
          */
         initDomEvent: function () {
             var self = this;
@@ -403,6 +415,16 @@ define(function (require) {
             info.on('click', '.retry', function () {
                 uploader.retry();
             });
+        },
+
+        /**
+         * 相关dom事件解绑
+         *
+         * @private
+         */
+        unbindDomEvent: function () {
+            this.elements.upload.unbind('click');
+            this.elements.info.unbind('click');
         },
 
         /**
@@ -486,7 +508,7 @@ define(function (require) {
                                 return;
                             }
 
-                            if (!lib.isSupportBase64) {
+                            if (lib.isSupportBase64) {
 
                                 // 创建flash(多个实例的话，只通过hash无法保证id唯一)
                                 var hash = +new Date();
@@ -642,7 +664,7 @@ define(function (require) {
             uploadEle.addClass('state-' + state);
             this.state = state;
 
-            var lis = $(this.elements.main).find('.filelist li');
+            var lis = this.elements.main.find('.filelist li');
 
             switch (state) {
                 case 'pedding':
@@ -800,16 +822,6 @@ define(function (require) {
         },
 
         /**
-         * 是否正在上传中
-         *
-         * @public
-         * @return {boolean} 是否上传状态
-         */
-        isInProgress: function () {
-            return this.isInProgress();
-        },
-
-        /**
          * 更新已上传的文件
          *
          * @public
@@ -817,7 +829,6 @@ define(function (require) {
          * @return {boolean} 是否上传状态
          */
         updateUploadedFile: function (imgArr) {
-
             // 清空原有图片
             this.removeAllFiles();
 

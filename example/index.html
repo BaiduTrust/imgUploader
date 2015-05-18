@@ -32,39 +32,51 @@
     </div>
     <div class="kb-upload-tip">最多可上传3张图片，图片类型应为jpg、png、gif、bmp，单张大小不超过2M</div>
 </div>
-<br><br><br>
+<br><br>
 <p id="states">未上传</p>
 <ul id="upload-list"></ul>
 <script>
 require.config({
-    packages: [
-        {
-            name: 'uploader',
-            location: '../src',
-            main: 'main'
-        }
-    ]
+    baseUrl: '/src'
 });
 
-require(['uploader'], function (Uploader) {
-    new Uploader({
-        main: '#uploader',
-        server: './fileuploadajax.php',
-        fileNumLimit: 3,
-        onStart: function () {
-            $('#states').html('开始上传');
-        },
-        onFinished: function (files) {
-            $('#states').html('所有文件上传完成');
-            var tplArr = [];
+require(['main'], function (Uploader) {
+    var uploader;
 
-            var liTpl = $.each(files, function(i, item) {
-                tplArr.push('<li>' + item.info + '</li>');
-            });
+    if (!uploader) {
+        uploader = new Uploader({
+            main: '#uploader',
+            server: './fileuploadajax.php',
+            fileNumLimit: 3,
+            onStart: function () {
+                $('#states').html('开始上传');
+            },
+            onFinished: function (files) {
+                $('#states').html('上传文件：');
+                var tplArr = [];
 
-            $('#upload-list').html(tplArr.join(''));
-        }
-    });
+                var liTpl = $.each(files, function(i, item) {
+                    tplArr.push('<li>' + item.info + '</li>');
+                });
+
+                if (tplArr.length) {
+                    $('#upload-list').html(tplArr.join(''));
+                }
+                else {
+                    $('#upload-list').html('<li>没有上传任何文件</li>');
+                }
+            }
+        });
+
+        // 更新已经上传的图片
+        // uploader.updateUploadedFile([
+        //     {
+        //         key: '/comt/1409728740_9f9cba76ced3e8167be9adc0fe317b121111111111.png',
+        //         thumb: 'http://koubei.baidu.com/photo/gift/3.png',
+        //         rotate: 0
+        //     }
+        // ]);
+    }
 });
 
 </script>

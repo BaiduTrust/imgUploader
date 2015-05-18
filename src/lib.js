@@ -1,3 +1,4 @@
+
 /**
  * @file 上传图片基础库
  * @author chengong03(chengong03@baidu.com)
@@ -213,11 +214,14 @@ define(function (require) {
      */
     lib.randomString = function (len) {
         len = len || 32;
-        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
-        var maxPos = $chars.length;
+        var chars = ''
+            + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            + 'abcdefghijklmnopqrstuvwxyz'
+            + '0123456789';
+        var maxPos = chars.length;
         var pwd = '';
         for (var i = 0; i < len; i++) {
-            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+            pwd += chars.charAt(Math.floor(Math.random() * maxPos));
         }
         return pwd;
     };
