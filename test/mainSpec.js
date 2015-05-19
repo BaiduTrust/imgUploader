@@ -30,6 +30,8 @@ define(function (require) {
     var uploader;
 
     beforeEach(function () {
+        // 阻止alert
+        window.alert = function (){};
         $(TPL).appendTo(document.body);
     });
 
@@ -91,6 +93,8 @@ define(function (require) {
                 expect(uploader.state).toBe('finish');
                 console.log(uploader.getUploadedFiles());
                 expect(uploader.getUploadedFiles().length).toBe(1);
+
+                uploader.showUploadErrorTip('Q_EXCEED_NUM_LIMIT');
             })
             .not.toThrow();
 
@@ -112,8 +116,6 @@ define(function (require) {
                     }
                 ]
             );
-
-            console.log(uploader);
 
             expect(function () {
                 $(uploader.elements.main.find('.cancel')).trigger('click');

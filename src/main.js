@@ -508,7 +508,7 @@ define(function (require) {
                                 return;
                             }
 
-                            if (lib.isSupportBase64) {
+                            if (!lib.isSupportBase64) {
 
                                 // 创建flash(多个实例的话，只通过hash无法保证id唯一)
                                 var hash = +new Date();
@@ -522,9 +522,10 @@ define(function (require) {
                                     wmode: 'transparent',
                                     allowscriptaccess: 'always'
                                 });
+
                                 wrap.empty().append($(html));
 
-                                lib.filePrevPool[id] = src;
+                                filePrevPool[id] = src;
 
                                 return;
                             }
@@ -780,31 +781,6 @@ define(function (require) {
             spans.eq(1).css('width', Math.round(percent * 100) + '%');
             this.updateStatus();
         },
-
-        /**
-         * 获取上传状态
-         *
-         * @public
-         * @return {number} 状态：1为没有选择图，2为选择了但没有上传，3为上传了
-         */
-        // getUploadState: function () {
-        //     var status = 1;
-        //     var stats = this.uploader.getStats();
-        //     var successNum = stats.successNum;
-        //     var queueNum = stats.queueNum;
-
-        //     if (successNum === 0 && queueNum === 0) {
-        //         status = 1;
-        //     }
-        //     else if (queueNum > 0) {
-        //         status = 2;
-        //     }
-        //     else if (successNum > 0 && queueNum === 0) {
-        //         status = 3;
-        //     }
-
-        //     return status;
-        // },
 
         /**
          * 获取上传成功的文件的信息

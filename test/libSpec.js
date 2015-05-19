@@ -3,6 +3,12 @@ define(function (require) {
     var lib = require('lib');
 
     describe('lib函数', function() {
+        it('toArray', function () {
+            expect(lib.toArray(null)).toEqual([]);
+            expect(lib.toArray([1, 2, 3])).toEqual([1, 2, 3]);
+            expect(lib.toArray('hello')).toEqual(['hello']);
+        });
+
         it('encodeHTML', function () {
             expect(lib.encodeHTML('&<>\'"')).toBe('&amp;&lt;&gt;&#39;&quot;');
         });

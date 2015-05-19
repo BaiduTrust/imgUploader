@@ -8,13 +8,20 @@
 define(function (require) {
 
     /**
+     * 基础库
+     *
+     * @exports lib
+     */
+    var lib = {};
+
+    /**
      * 将一个变量转换成array
      *
-     * @inner
+     * @public
      * @param {*} source 需要转换成array的变量
      * @return {Array} 转换后的array
      */
-    function toArray(source) {
+    lib.toArray = function (source) {
         if (source === null || source === undefined) {
             return [];
         }
@@ -43,18 +50,18 @@ define(function (require) {
         }
 
         return [].slice.call(source);
-    }
+    };
 
     /**
      * 移除数组中的项
      *
-     * @inner
+     * @public
      * @param {Array} source 需要移除项的数组
      * @param {*} match 要移除的项
      *
      * @return {Array} 移除后的数组
      */
-    function arrayRemove(source, match) {
+    lib.arrayRemove = function (source, match) {
         var len = source.length;
 
         while (len--) {
@@ -63,15 +70,15 @@ define(function (require) {
             }
         }
         return source;
-    }
+    };
 
     /**
      * 是否支持css3的transition
      *
-     * @inner
+     * @public
      * @return {boolean} 支持状态
      */
-    function supportTransition() {
+    lib.supportTransition = function () {
         var s = document.createElement('p').style;
         var r = 'transition' in s
             || 'WebkitTransition' in s
@@ -80,7 +87,7 @@ define(function (require) {
             || 'OTransition' in s;
         s = null;
         return r;
-    }
+    };
 
     /**
      * flash版本
@@ -89,7 +96,7 @@ define(function (require) {
      * @return {number} flash版本号
      */
     /* eslint-disable */
-    function flashVersion() {
+    lib.flashVersion = function () {
         var flashVer = NaN;
 
         if (window.ActiveXObject) {
@@ -121,14 +128,7 @@ define(function (require) {
         }
 
         return flashVer;
-    }
-
-    /**
-     * 基础库
-     *
-     * @exports lib
-     */
-    var lib = {};
+    };
 
     /**
      * 浏览器判断及版本
@@ -149,7 +149,7 @@ define(function (require) {
     /**
      * 对目标字符串进行html编码
      *
-     * @inner
+     * @public
      * @param {string} source 目标字符串
      * @return {string} html编码后的字符串
      */
@@ -165,7 +165,7 @@ define(function (require) {
     /**
      * 判断是否支持base64
      *
-     * @inner
+     * @public
      * @return {boolean} 是否是base64
      */
     lib.isSupportBase64 = function () {
@@ -184,13 +184,13 @@ define(function (require) {
     /**
      * 选中图片
      *
-     * @inner
+     * @public
      * @param {HTMLElement} elem 旋转的对象
      * @param {number} rotation 旋转角度
      */
     lib.rotateFile = function (elem, rotation) {
         elem = $(elem);
-        if (supportTransition) {
+        if (lib.supportTransition) {
             var deg = 'rotate(' + rotation + 'deg)';
             elem.css({
                 '-webkit-transform': deg,
@@ -208,7 +208,7 @@ define(function (require) {
     /**
      * 随机字符串
      *
-     * @inner
+     * @public
      * @param  {number} len 字符串长度
      * @return {string} 随机字符串
      */
@@ -229,7 +229,7 @@ define(function (require) {
     /**
      * 获得flash对象的实例
      *
-     * @inner
+     * @public
      * @param {string} name flash对象的名称
      * @return {HTMLElement} flash对象的实例
      */
@@ -240,7 +240,7 @@ define(function (require) {
         var ret;
         return lib.browser.ie === 9 ?
             movie && movie.length ?
-                (ret = arrayRemove(toArray(movie), function (item) {
+                (ret = lib.arrayRemove(lib.toArray(movie), function (item) {
                     return item.tagName.toLowerCase() !== 'embed';
                 })).length === 1 ? ret[0] : ret
                 : movie
@@ -287,7 +287,7 @@ define(function (require) {
     /* eslint-disable */
     lib.createSwfHTML = function (options) {
         options = options || {};
-        var version = flashVersion;
+        var version = lib.flashVersion;
         var needVersion = options.ver || '10';
         var i;
         var k;
