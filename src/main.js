@@ -3,15 +3,7 @@
  * @author chengong03(chengong03@baidu.com)
  * @date 2015-05-05
  */
-// require.config({
-//     packages: [
-//         {
-//             name: 'webuploader',
-//             location: '../dep/webuploader',
-//             main: 'webuploader'
-//         }
-//     ]
-// });
+
 define(function (require) {
 
     var WebUploader = require('../dep/webuploader/webuploader');
