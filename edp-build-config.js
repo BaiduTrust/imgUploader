@@ -1,7 +1,8 @@
+/* eslint-disable */
 exports.input = __dirname;
 
-var path = require( 'path' );
-exports.output = path.resolve( __dirname, 'output' );
+var path = require('path');
+exports.output = path.resolve(__dirname, 'output');
 
 // var moduleEntries = 'html,htm,phtml,tpl,vm,js';
 // var pageEntries = 'html,htm,phtml,tpl,vm';
@@ -73,9 +74,9 @@ exports.exclude = [
     '/upload_tmp'
 ];
 
-exports.injectProcessor = function ( processors ) {
-    for ( var key in processors ) {
-        global[ key ] = processors[ key ];
+exports.injectProcessor = function (processors) {
+    for (var key in processors) {
+        global[key] = processors[key];
     }
 };
 

@@ -9,10 +9,10 @@
  * Contributing: http://www.plupload.com/contributing
  */
 
-#!! IMPORTANT:
-#!! this file is just an example, it doesn't incorporate any security checks and
-#!! is not recommended to be used in production environment as it is. Be sure to
-#!! revise it and customize to your needs.
+// IMPORTANT:
+// this file is just an example, it doesn't incorporate any security checks and
+// is not recommended to be used in production environment as it is. Be sure to
+// revise it and customize to your needs.
 
 
 // Make sure file is not cached (as it happens for example on iOS devices)
@@ -80,7 +80,7 @@ if (isset($_REQUEST["name"])) {
 $md5File = @file('md5list.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $md5File = $md5File ? $md5File : array();
 
-if (isset($_REQUEST["md5"]) && array_search($_REQUEST["md5"], $md5File ) !== FALSE ) {
+if (isset($_REQUEST["md5"]) && array_search($_REQUEST["md5"], $md5File ) !== false ) {
     die('{"jsonrpc" : "2.0", "result" : null, "id" : "id", "exist": 1}');
 }
 
@@ -98,7 +98,9 @@ if ($cleanupTargetDir) {
         die('{"jsonrpc" : "2.0", "error" : {"code": 100, "message": "Failed to open temp directory."}, "id" : "id"}');
     }
 
-    while (($file = readdir($dir)) !== false) {
+    $file = readdir($dir);
+
+    while ($file !== false) {
         $tmpfilePath = $targetDir . DIRECTORY_SEPARATOR . $file;
 
         // If temp file is current file proceed to the next
@@ -110,6 +112,8 @@ if ($cleanupTargetDir) {
         if (preg_match('/\.(part|parttmp)$/', $file) && (@filemtime($tmpfilePath) < time() - $maxFileAge)) {
             @unlink($tmpfilePath);
         }
+
+        $file = readdir($dir);
     }
     closedir($dir);
 }
@@ -135,8 +139,11 @@ if (!empty($_FILES)) {
     }
 }
 
-while ($buff = fread($in, 4096)) {
+$buff = fread($in, 4096);
+
+while ($buff) {
     fwrite($out, $buff);
+    $buff = fread($in, 4096);
 }
 
 @fclose($out);
@@ -162,9 +169,10 @@ if ( $done ) {
             if (!$in = @fopen("{$filePath}_{$index}.part", "rb")) {
                 break;
             }
-
-            while ($buff = fread($in, 4096)) {
+            $buff = fread($in, 4096);
+            while ($buff) {
                 fwrite($out, $buff);
+                $buff = fread($in, 4096);
             }
 
             @fclose($in);
@@ -179,7 +187,7 @@ if ( $done ) {
 $re = array(
     'data' => '/comt/1408344270_b7fe11911e62d9fd3d206add09527014.jpeg',
     // 'data' => 'http://koubei-off.baidu.com:8082/photo/school/280_200.jpg',
-    'status' => 0
+    'status' => 0,
 );
 
 die(json_encode($re));

@@ -1,3 +1,4 @@
+/* eslint-disable */
 exports.port = 8830;
 exports.directoryIndexes = true;
 exports.documentRoot = __dirname;
@@ -54,8 +55,8 @@ exports.getLocations = function () {
     ];
 };
 
-exports.injectResource = function ( res ) {
-    for ( var key in res ) {
-        global[ key ] = res[ key ];
+exports.injectResource = function (res) {
+    for (var key in res) {
+        global[key] = res[key];
     }
 };
