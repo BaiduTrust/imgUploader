@@ -76,6 +76,30 @@ define(function (require) {
         STATUS_FAIL_COUNT: '，失败${failNum}张'
     };
 
+    /**
+     * 模板常量
+     *
+     * @const
+     * @type {Object}
+     */
+    var TPL = {
+        // 上传列表
+        FILE_LIST: ''
+            + '<li id="${id}">'
+            +     '<p class="imgWrap"></p>'
+            +     '<p class="progress" style="display:none;">'
+            +         '<span class="text">0%</span>'
+            +         '<span class="percent"></span>'
+            +     '</p>'
+            + '</li>',
+        // 上传按钮
+        UPLOAD_BTN: ''
+            + '<div class="file-panel">'
+            +     '<span class="cancel">X</span>'
+            +     '<span class="rotate-right">右边</span>'
+            + '</div>'
+    };
+
     // 如果不支持base64，改用flash预览
     var filePrevPool = {};
 
@@ -201,7 +225,7 @@ define(function (require) {
             ];
 
             // 错误处理
-            $.each(domMap, function(i, item) {
+            $.each(domMap, function (i, item) {
                 if (!item.elem) {
                     throw new Error(item.msg);
                 }
@@ -274,6 +298,9 @@ define(function (require) {
             if (!this.uploader) {
                 this.uploader = WebUploader.create(this.opts);
 
+                // 因为该上传组件样式的特殊性，在上传队列中增加一个上传按钮
+                // 当没有图片的时候，使用的是默认的上传按钮
+                // 当存在图片队列时，使用的是这个新的按钮
                 this.uploader.addButton({
                     id: '#' + this.btnAddId,
                     label: MSG.ADD_IMG
@@ -360,7 +387,7 @@ define(function (require) {
 
             // 上传进度
             uploader.onUploadProgress = function (file, percentage) {
-                // webuplaoder swf有bug，percentage会返回Infinity，简单屏蔽下
+                // percentage会返回Infinity，简单屏蔽下
                 if (!isFinite(percentage)) {
                     percentage = 1;
                 }
@@ -517,7 +544,7 @@ define(function (require) {
          *
          * @private
          * @param  {string} code 错误文案
-         * @param  {(HTMLElement | object)} elem 容器
+         * @param  {(HTMLElement | jQuery | string)} elem 容器
          */
         showError: function (code, elem) {
             var textWrap = $('<p class="error"></p>');
@@ -569,24 +596,18 @@ define(function (require) {
             var uploader = this.uploader;
             var percentages = this.percentages;
 
-            var liHtml = ''
-                + '<li id="' + file.id + '">'
-                +     '<p class="imgWrap"></p>'
-                +     '<p class="progress" style="display:none;">'
-                +         '<span class="text">0%</span>'
-                +         '<span class="percent"></span>'
-                +     '</p>'
-                + '</li>';
+            var liHtml = lib.stringFormat(
+                TPL.FILE_LIST,
+                {
+                    id: file.id
+                }
+            );
+
             var li = $(liHtml);
 
-            var btnsHtml = ''
-                + '<div class="file-panel">'
-                +     '<span class="cancel">X</span>'
-                +     '<span class="rotate-right">右边</span>'
-                + '</div>';
+            var btnsHtml = TPL.UPLOAD_BTN;
 
             var btns = $(btnsHtml).appendTo(li);
-
 
             var progress = li.find('p.progress');
             var wrap = li.find('p.imgWrap');
