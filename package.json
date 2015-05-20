@@ -1,7 +1,5 @@
 {
     "name": "imgUploader",
     "description": "图片上传组件",
-    "version": "0.1.0",
-    "dependencies": {
-    }
+    "version": "0.1.0"
 }

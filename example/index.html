@@ -5,12 +5,11 @@
     <title></title>
     <link rel="stylesheet" href="../src/uploader.less">
     <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-6-6/esl.js"></script>
-    <script src="./jquery.js"></script>
 </head>
 <body>
 <h2>imgUploader上传组件</h2>
 <div id="uploader">
-    <div class="kb-uploader">
+    <div class="img-uploader">
         <p class="uploader-title">
             <label class="title-name">上传图片</label>
         </p>
@@ -25,17 +24,16 @@
                 <span class="text">0%</span>
                 <span class="percentage"></span>
             </div><div class="info"></div>
-            <div class="btns">
-                <em>（审核后可见）</em>
-            </div>
         </div>
     </div>
-    <div class="kb-upload-tip">最多可上传3张图片，图片类型应为jpg、png、gif、bmp，单张大小不超过2M</div>
+    <div class="img-upload-tip">最多可上传3张图片，图片类型应为jpg、png、gif、bmp，单张大小不超过2M</div>
 </div>
 <br><br>
 <p id="states">未上传</p>
 <ul id="upload-list"></ul>
+<script src="./jquery.js"></script>
 <script>
+// 注意，编译注意对swf文件的路径进行替换
 require.config({
     baseUrl: '/src'
 });

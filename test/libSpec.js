@@ -21,18 +21,15 @@ define(function (require) {
         it('createSwfHTML & getSwfMovie', function () {
             var swfTpl;
 
-            expect(function () {
-                swfTpl = lib.createSwfHTML({
-                    id: '1234567',
-                    imgPrevSwf: '/src/swf/showPicDemo.swf',
-                    width: 100,
-                    height: 100,
-                    salign: 'l',
-                    wmode: 'transparent',
-                    allowscriptaccess: 'always'
-                });
-            })
-            .not.toThrow();
+            swfTpl = lib.createSwfHTML({
+                id: '1234567',
+                imgPrevSwf: '/src/swf/showPicDemo.swf',
+                width: 100,
+                height: 100,
+                salign: 'l',
+                wmode: 'transparent',
+                allowscriptaccess: 'always'
+            });
 
             var swfElem = $(swfTpl);
 

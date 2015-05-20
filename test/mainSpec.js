@@ -4,7 +4,7 @@ define(function (require) {
 
     var TPL = ''
         + '<div id="uploader">'
-        +   '<div class="kb-uploader">'
+        +   '<div class="img-uploader">'
         +       '<p class="uploader-title">'
         +           '<label class="title-name">上传图片</label>'
         +       '</p>'
@@ -24,7 +24,7 @@ define(function (require) {
         +           '</div>'
         +       '</div>'
         +   '</div>'
-        +   '<div class="kb-upload-tip">最多可上传3张图片，图片类型应为jpg、png、gif、bmp，单张大小不超过2M</div>'
+        +   '<div class="img-upload-tip">最多可上传3张图片，图片类型应为jpg、png、gif、bmp，单张大小不超过2M</div>'
         + '</div>';
 
     var uploader;
@@ -57,16 +57,6 @@ define(function (require) {
                 });
             })
             .toThrow();
-
-            expect(function () {
-                new Uploader({
-                    main: '#uploader',
-                    server: '../example/fileuploadajax.php',
-                    fileNumLimit: 3,
-                    onStart: function () {},
-                    onFinished: function () {}
-                });
-            }).not.toThrow();
         });
 
         it('基本方法', function() {
@@ -76,8 +66,7 @@ define(function (require) {
                 fileNumLimit: 3
             });
 
-            expect(uploader.updateUploadedFile()).toBe(false);
-            expect(uploader.updateUploadedFile([])).not.toBe(false);
+            expect(uploader.updateUploadedFile()).toBeFalsy();
 
             expect(function () {
                 expect(uploader.state).toBe('pedding');
@@ -117,10 +106,9 @@ define(function (require) {
                 ]
             );
 
-            expect(function () {
-                $(uploader.elements.main.find('.cancel')).trigger('click');
-            })
-            .not.toThrow();
+            $(uploader.elements.main.find('.cancel')).trigger('click');
+
+            expect(uploader.getUploadedFiles().length).toBe(0);
         });
 
         it('图片旋转事件', function() {
@@ -140,10 +128,9 @@ define(function (require) {
                 ]
             );
 
-            expect(function () {
-                $(uploader.elements.main.find('.rotate-right')).trigger('click');
-            })
-            .not.toThrow();
+            $(uploader.elements.main.find('.rotate-right')).trigger('click');
+
+            expect(uploader.getUploadedFiles()[0].file.file.rotation).toBe(90);
         });
     });
 });

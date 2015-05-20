@@ -40,10 +40,8 @@
 
 // 不透明度
 .opacity(@op) {
-    /* opacity */
     opacity:@op / 100;
     filter:Alpha(Opacity=@op);
-
 }
 
 // 圆角
@@ -57,6 +55,18 @@
        -moz-background-clip: padding;
         -ms-background-clip: padding;
             background-clip: padding;
+}
+
+// 过渡
+.transition(@transition, ...) {
+    @transitions: ~`(function() { var args = "@{arguments}".replace(/[[\]]/g, ""); if(!args.match(/[^,]\s+[^,]/)) { args = args.replace(/,(?=[^()]*\))/g, "%est%").replace(/,/g, "").replace(/%est%/g, ","); } return args;})()`;
+    @webkit-transitions: ~`"@{transitions}".replace(/(transform|perspective)/g, "-webkit-$1")`;
+    @moz-transitions: ~`"@{transitions}".replace(/(transform|perspective)/g, "-moz-$1")`;
+    @ms-transitions: ~`"@{transitions}".replace(/(transform|perspective)/g, "-ms-$1")`;
+    -webkit-transition: @webkit-transitions;
+       -moz-transition: @moz-transitions;
+        -ms-transition: @ms-transitions;
+            transition: @transitions;
 }
 
 // biz
@@ -86,7 +96,7 @@
     pointer-events:none;
 }
 
-.kb-uploader {
+.img-uploader {
     position: relative;
 
     &.error {
@@ -119,7 +129,6 @@
     // 标题
     .uploader-title {
         border: 1px solid #d9d9d9;
-        padding: 0;
         margin: 0;
         padding: 9px 0;
         background-color: #f5f5f5;
@@ -127,10 +136,9 @@
         font-size: 14px;
 
         .title-name {
-            margin-left: 9px;
+            margin-left: 0 3px 0 9px;
             font-size: 15px;
             color: #666;
-            margin-right: 3px;
         }
     }
 
@@ -144,7 +152,6 @@
         .file-picker,
         .webuploader-container {
             .size(95px);
-            .inline-block();
             float: left;
             margin: 20px 0 20px 20px;
         }
@@ -217,7 +224,6 @@
             }
 
             li {
-                .inline-block();
                 .size(95px);
                 text-align: center;
                 margin: 0 0 20px 20px;
@@ -247,6 +253,7 @@
                 // 图片容器
                 .imgWrap {
                     .size(100px);
+                    .transition(all 200ms ease-out);
                     line-height: 100px;
                     position: relative;
                     z-index: 2;
@@ -259,22 +266,16 @@
                         -ms-transform-origin: 50% 50%;
                             transform-origin: 50% 50%;
 
-                    -webit-transition: 200ms ease-out;
-                      -moz-transition: 200ms ease-out;
-                       -ms-transition: 200ms ease-out;
-                           transition: 200ms ease-out;
-
                     img {
                         width: 100%;
                     }
                 }
 
                 .progress {
+                    .size(100%, 18px);
                     position: absolute;
-                    width: 100%;
                     bottom: 0;
                     left: 0;
-                    height: 18px;
                     line-height: 18px;
                     overflow: hidden;
                     z-index: 50;
@@ -290,6 +291,7 @@
                     }
 
                     .percent {
+                        .transition(width 200ms linear);
                         display: none;
                         overflow: hidden;
                         width: 0;
@@ -298,11 +300,6 @@
                         top: 0;
                         bottom: 0;
                         background-color: #ff7f02;
-
-                        -webit-transition: width 200ms linear;
-                          -moz-transition: width 200ms linear;
-                           -ms-transition: width 200ms linear;
-                               transition: width 200ms linear;
 
                         -webkit-animation: progressmove 2s linear infinite;
                            -moz-animation: progressmove 2s linear infinite;
@@ -327,7 +324,6 @@
                     overflow: hidden;
                     z-index: 90;
                     display: none;
-                    background: #485866;
                     background: #000;
                     background: rgba(0, 0, 0, .8);
 
@@ -356,14 +352,13 @@
                 }
 
                 .error {
+                    .size(100%, 28px);
                     background: #f00;
                     color: #fff;
                     position: absolute;
                     bottom: 0;
                     left: 0;
-                    height: 28px;
                     line-height: 28px;
-                    width: 100%;
                     z-index: 100;
                     padding: 0;
                     margin: 0;
@@ -391,11 +386,10 @@
         background-color: #fafafa;
 
         .progress {
+            .size(140px, 18px);
             .inline-block();
             border: 1px solid #ff8502;
-            width: 140px;
             background: #fff;
-            height: 18px;
             position: relative;
             text-align: center;
             line-height: 20px;
@@ -420,28 +414,14 @@
         }
 
         .info {
-            display: inline-block;
+            .inline-block();
             font-size: 14px;
             color: #666;
-        }
-
-        .btns {
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            line-height: 30px;
-
-            em {
-                .inline-block();
-                float: left;
-                font-style: normal;
-                color: #f00;
-            }
         }
     }
 }
 
-.kb-upload-tip {
+.img-upload-tip {
     margin-top: 7px;
     margin-bottom: 15px;
     color: #f60;
@@ -461,6 +441,7 @@
        background-position: 17px 0;
     }
 }
+
 @-moz-keyframes progressmove {
     0% {
        background-position: 0 0;
@@ -469,6 +450,7 @@
        background-position: 17px 0;
     }
 }
+
 @keyframes progressmove {
     0% {
        background-position: 0 0;
