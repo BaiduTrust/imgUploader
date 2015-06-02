@@ -44,18 +44,33 @@ define(function (require) {
     };
 
     /**
-     * 上传状态常量
+     * 文件状态常量
      *
      * @const
      * @type {Object}
      */
-    var STATUS = {
+    var FILE_STATUS = {
         PROGRESS: 'progress',
         ERROR: 'error',
         INVALID: 'invalid',
         INTERRUPT: 'interrupt',
         QUEUED: 'queued',
         COMPLETE: 'complete'
+    };
+
+    /**
+     * 上传状态常量
+     *
+     * @const
+     * @type {Object}
+     */
+    var UPLOARD_STATUS = {
+        PEDDING: 'pedding',
+        READY: 'ready',
+        UPLOADING: 'uploading',
+        PAUSED: 'paused',
+        CONFIRM: 'confirm',
+        FINISH: 'finish'
     };
 
     /**
@@ -289,7 +304,7 @@ define(function (require) {
             this.thumbnailHeight = 100 * ratio;
 
             // 可能有pedding, ready, uploading, confirm, done.
-            this.state = 'pedding';
+            this.state = UPLOARD_STATUS.PEDDING;
 
             // 所有文件的进度信息，key为file id
             this.percentages = {};
@@ -452,7 +467,7 @@ define(function (require) {
                 }
 
                 self.addFile(file);
-                self.setState('ready');
+                self.setState(UPLOARD_STATUS.READY);
                 self.updateTotalProgress();
 
                 self.refreshStyle();
@@ -464,7 +479,7 @@ define(function (require) {
                 self.fileSize -= file.size;
 
                 if (!self.fileCount) {
-                    self.setState('pedding');
+                    self.setState(UPLOARD_STATUS.PEDDING);
                 }
 
                 self.removeFile(file);
@@ -506,13 +521,13 @@ define(function (require) {
             uploader.on('all', function (type) {
                 switch (type) {
                     case 'uploadFinished':
-                        self.setState('confirm');
+                        self.setState(UPLOARD_STATUS.CONFIRM);
                         break;
                     case 'startUpload':
-                        self.setState('uploading');
+                        self.setState(UPLOARD_STATUS.UPLOADING);
                         break;
                     case 'stopUpload':
-                        self.setState('paused');
+                        self.setState(UPLOARD_STATUS.PAUSED);
                         break;
                 }
             });
@@ -678,26 +693,30 @@ define(function (require) {
 
             if (!isImgUploaded) {
                 file.on('statuschange', function (cur, prev) {
-                    if (prev === STATUS.PROGRESS) {
+                    if (prev === FILE_STATUS.PROGRESS) {
                         progress.hide().width(0);
                     }
 
                     // 成功
-                    if (cur === STATUS.ERROR || cur === STATUS.INVALID) {
+                    if (cur === FILE_STATUS.ERROR || cur === FILE_STATUS.INVALID) {
                         self.showError(file.statusText, li);
                         percentages[file.id][1] = 1;
                     }
-                    else if (cur === STATUS.INTERRUPT) {
-                        self.showError(STATUS.INTERRUPT, li);
+                    // 中断
+                    else if (cur === FILE_STATUS.INTERRUPT) {
+                        self.showError(FILE_STATUS.INTERRUPT, li);
                     }
-                    else if (cur === STATUS.QUEUED) {
+                    // 入队列
+                    else if (cur === FILE_STATUS.QUEUED) {
                         percentages[file.id][1] = 0;
                     }
-                    else if (cur === STATUS.PROGRESS) {
+                    // 上传中
+                    else if (cur === FILE_STATUS.PROGRESS) {
                         info.remove();
                         progress.css('display', 'block');
                     }
-                    else if (cur === STATUS.COMPLETE) {
+                    // 完成
+                    else if (cur === FILE_STATUS.COMPLETE) {
                         li.append('<span class="success"></span>');
                     }
 
@@ -805,7 +824,7 @@ define(function (require) {
 
             switch (state) {
                 // 待上传状态
-                case 'pedding':
+                case UPLOARD_STATUS.PEDDING:
                     lis.removeClass('no-del');
                     queueEle.hide();
                     statusBarEle.addClass('element-invisible');
@@ -813,7 +832,7 @@ define(function (require) {
                     break;
 
                 // 准备上传状态
-                case 'ready':
+                case UPLOARD_STATUS.READY:
                     lis.removeClass('no-del');
                     uploadEle.text(MSG.START_TO_UPLOAD).removeClass('disabled');
                     queueEle.show();
@@ -822,34 +841,34 @@ define(function (require) {
                     break;
 
                 // 上传状态
-                case 'uploading':
+                case UPLOARD_STATUS.UPLOADING:
                     lis.addClass('no-del');
                     progressEle.show();
                     uploadEle.addClass('disabled');
                     break;
 
                 // 暂停状态
-                case 'paused':
+                case UPLOARD_STATUS.PAUSED:
                     lis.addClass('no-del');
                     progressEle.show();
                     uploadEle.text(MSG.CONTINUE_TO_UPLOAD);
                     break;
 
                 // 上传后状态，可能有上传失败的图片
-                case 'confirm':
+                case UPLOARD_STATUS.CONFIRM:
                     lis.removeClass('no-del');
                     progressEle.hide();
                     uploadEle.text(MSG.START_TO_UPLOAD).addClass('disabled');
 
                     stats = uploader.getStats();
                     if (stats.successNum && !stats.uploadFailNum) {
-                        self.setState('finish');
+                        self.setState(UPLOARD_STATUS.FINISH);
                         return;
                     }
                     break;
 
                 // 上传完毕状态，无上传失败的图片
-                case 'finish':
+                case UPLOARD_STATUS.FINISH:
                     lis.removeClass('no-del');
                     stats = uploader.getStats();
                     if (!stats.successNum) {
@@ -1003,7 +1022,7 @@ define(function (require) {
                     self.elements.statusBar.show();
                 }
                 self.addFile(file);
-                self.setState('finish');
+                self.setState(UPLOARD_STATUS.FINISH);
 
                 // 重置上传数量
                 self.uploader.request('get-stats').numOfSuccess++;
