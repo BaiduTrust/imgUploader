@@ -44,6 +44,21 @@ define(function (require) {
     };
 
     /**
+     * 上传状态常量
+     *
+     * @const
+     * @type {Object}
+     */
+    var STATUS = {
+        PROGRESS: 'progress',
+        ERROR: 'error',
+        INVALID: 'invalid',
+        INTERRUPT: 'interrupt',
+        QUEUED: 'queued',
+        COMPLETE: 'complete'
+    };
+
+    /**
      * 文案常量
      *
      * @const
@@ -663,26 +678,26 @@ define(function (require) {
 
             if (!isImgUploaded) {
                 file.on('statuschange', function (cur, prev) {
-                    if (prev === 'progress') {
+                    if (prev === STATUS.PROGRESS) {
                         progress.hide().width(0);
                     }
 
                     // 成功
-                    if (cur === 'error' || cur === 'invalid') {
+                    if (cur === STATUS.ERROR || cur === STATUS.INVALID) {
                         self.showError(file.statusText, li);
                         percentages[file.id][1] = 1;
                     }
-                    else if (cur === 'interrupt') {
-                        self.showError('interrupt', li);
+                    else if (cur === STATUS.INTERRUPT) {
+                        self.showError(STATUS.INTERRUPT, li);
                     }
-                    else if (cur === 'queued') {
+                    else if (cur === STATUS.QUEUED) {
                         percentages[file.id][1] = 0;
                     }
-                    else if (cur === 'progress') {
+                    else if (cur === STATUS.PROGRESS) {
                         info.remove();
                         progress.css('display', 'block');
                     }
-                    else if (cur === 'complete') {
+                    else if (cur === STATUS.COMPLETE) {
                         li.append('<span class="success"></span>');
                     }
 

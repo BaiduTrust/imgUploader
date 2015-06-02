@@ -1,4 +1,3 @@
-
 /**
  * @file 上传图片基础库
  * @author chengong03(chengong03@baidu.com)
@@ -208,7 +207,6 @@ define(function (require) {
      * @param {string} name flash对象的名称
      * @return {HTMLElement} flash对象的实例
      */
-    /* eslint-disable */
     lib.getSwfMovie = function (name) {
         // ie9下, Object标签和embed标签嵌套的方式生成flash时,
         // 会导致document[name]多返回一个Object元素,而起作用的只有embed标签
@@ -223,8 +221,6 @@ define(function (require) {
             : movie || window[name];
     };
 
-    /* eslint-enable */
-
     /**
      * 创建flash对象的html字符串
      * @name createSwfHTML
@@ -238,9 +234,8 @@ define(function (require) {
      * @param {string} options.height flash的高度
      *
      * @meta standard
-     * @returns {string} flash对象的html字符串
+     * @return {string} flash对象的html字符串
      */
-    /* eslint-disable */
     lib.createSwfHTML = function (options) {
         options = options || {};
 
@@ -252,7 +247,9 @@ define(function (require) {
 
         // 复制options，避免修改原对象
         for (k in options) {
-            tmpOpt[k] = options[k];
+            if (options.hasOwnProperty(k)) {
+                tmpOpt[k] = options[k];
+            }
         }
         options = tmpOpt;
 
@@ -282,16 +279,20 @@ define(function (require) {
         }
         str.push('>');
         var params = {
-            'wmode': 1,
-            'allowscriptaccess': 1,
-            'movie': 1
+            wmode: 1,
+            allowscriptaccess: 1,
+            movie: 1
         };
 
+
+
         for (k in options) {
-            item = options[k];
-            k = k.toLowerCase();
-            if (params[k] && (item || item === false || item === 0)) {
-                str.push('<param name="' + k + '" value="' + lib.encodeHTML(item) + '" />');
+            if (options.hasOwnProperty(k)) {
+                item = options[k];
+                k = k.toLowerCase();
+                if (params[k] && (item || item === false || item === 0)) {
+                    str.push('<param name="' + k + '" value="' + lib.encodeHTML(item) + '" />');
+                }
             }
         }
 
@@ -299,11 +300,13 @@ define(function (require) {
         str.push('<embed');
 
         for (k in options) {
-            item = options[k];
-            if (item || item === false || item === 0) {
-                str.push(' ', k, '="', lib.encodeHTML(item), '"');
-                // modify
-                strEmbed.push(' ', k, '="', lib.encodeHTML(item), '"');
+            if (options.hasOwnProperty(k)) {
+                item = options[k];
+                if (item || item === false || item === 0) {
+                    str.push(' ', k, '="', lib.encodeHTML(item), '"');
+                    // modify
+                    strEmbed.push(' ', k, '="', lib.encodeHTML(item), '"');
+                }
             }
         }
 
@@ -312,7 +315,6 @@ define(function (require) {
 
         return lib.browser.ie ? str.join('') : strEmbed.join('');
     };
-    /* eslint-enable */
 
     return lib;
 });

@@ -1,3 +1,9 @@
+/**
+ * @file main.js 测试用例
+ * @author chengong03(chengong03@baidu.com)
+ * @date 2015-05-05
+ */
+
 define(function (require) {
 
     var Uploader = require('main');
