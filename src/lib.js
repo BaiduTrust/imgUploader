@@ -174,7 +174,7 @@ define(function (require) {
             });
         }
         else {
-            var ieRotate = ~~((rotation / 90) % 4 + 4) % 4;
+            var ieRotate = +((rotation / 90) % 4 + 4) % 4;
             elem.css('filter', 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieRotate + ')');
         }
     };
@@ -212,13 +212,22 @@ define(function (require) {
         // 会导致document[name]多返回一个Object元素,而起作用的只有embed标签
         var movie = document[name];
         var ret;
-        return lib.browser.ie === 9 ?
-            movie && movie.length ?
-                (ret = lib.arrayRemove(lib.toArray(movie), function (item) {
-                    return item.tagName.toLowerCase() !== 'embed';
-                })).length === 1 ? ret[0] : ret
-                : movie
-            : movie || window[name];
+
+        if (lib.browser.ie === 9) {
+            if (movie && movie.length) {
+                ret = lib.arrayRemove(
+                    lib.toArray(movie),
+                    function (item) {
+                        return item.tagName.toLowerCase() !== 'embed';
+                    }
+                );
+
+                return (ret.length === 1) ? ret[0] : ret;
+            }
+        }
+        else {
+            return movie || window[name];
+        }
     };
 
     /**
@@ -283,8 +292,6 @@ define(function (require) {
             allowscriptaccess: 1,
             movie: 1
         };
-
-
 
         for (k in options) {
             if (options.hasOwnProperty(k)) {
