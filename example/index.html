@@ -45,24 +45,26 @@ require(['main'], function (Uploader) {
         uploader = new Uploader({
             main: '#uploader',
             server: './fileuploadajax.php',
-            fileNumLimit: 3,
-            onStart: function () {
-                $('#states').html('开始上传');
-            },
-            onFinished: function (files) {
-                $('#states').html('上传文件：');
-                var tplArr = [];
+            fileNumLimit: 3
+        });
 
-                var liTpl = $.each(files, function(i, item) {
-                    tplArr.push('<li>' + item.info + '</li>');
-                });
+        uploader.on('start', function () {
+            $('#states').html('开始上传');
+        });
 
-                if (tplArr.length) {
-                    $('#upload-list').html(tplArr.join(''));
-                }
-                else {
-                    $('#upload-list').html('<li>没有上传任何文件</li>');
-                }
+        uploader.on('finished', function (files) {
+            $('#states').html('上传文件：');
+            var tplArr = [];
+
+            var liTpl = $.each(files, function(i, item) {
+                tplArr.push('<li>' + item.info + '</li>');
+            });
+
+            if (tplArr.length) {
+                $('#upload-list').html(tplArr.join(''));
+            }
+            else {
+                $('#upload-list').html('<li>没有上传任何文件</li>');
             }
         });
 

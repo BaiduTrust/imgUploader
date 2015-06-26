@@ -7,6 +7,7 @@
 define(function (require) {
 
     var WebUploader = require('../dep/webuploader/webuploader');
+    var Emitter = require('../dep/emitter');
     var lib = require('./lib');
 
     /**
@@ -21,7 +22,11 @@ define(function (require) {
         // 哈希前缀
         HASH_PRE: '_hash',
         // flash文件id前缀
-        SWF_ID_PRE: 'img-pref'
+        SWF_ID_PRE: 'img-pref',
+        // 展示图片swf
+        SWF_SHOW_PIC: require.toUrl('./swf/Uploader.swf'),
+        // 上传swf
+        SWF_UPLOADER: require.toUrl('./swf/showPicDemo.swf')
     };
 
     /**
@@ -157,8 +162,8 @@ define(function (require) {
      * @param {(string | HTMLElement)} opts.main 上传组件初始化父节点
      * @param {number} opts.fileNumLimit 最多上传文件的数量
      * @param {string} opts.server 后端上传图片地址
-     * @param {Funtion} opts.onStart 上传开始时的回调
-     * @param {Funtion} opts.onFinished 上传结束时的回调
+     * @fires Uploader#start 上传开始
+     * @fires Uploader#finished 上传完成
      */
     function Uploader(opts) {
         return this.init(opts);
@@ -188,8 +193,6 @@ define(function (require) {
                 throw new Error(ERROR_MSG.NOT_SUPPORT_BROWSER);
             }
 
-            this.opts = opts || {};
-
             var main = $(opts.main);
 
             var btnAddId = this.btnAddId = 'add-btn-' + lib.randomString(6);
@@ -215,7 +218,7 @@ define(function (require) {
                 // 上传按钮
                 upload: main.find('.upload-btn'),
                 // 没选择文件之前的内容
-                placeHolder: main.find('.placeholder'),
+                placeholder: main.find('.placeholder'),
                 // 进度条
                 progress: main.find('.progress'),
                 // 上传框
@@ -241,7 +244,7 @@ define(function (require) {
                     msg: ERROR_MSG.REQUIRE_DOM_UPLOAD
                 },
                 {
-                    elem: elems.placeHolder,
+                    elem: elems.placeholder,
                     msg: ERROR_MSG.REQUIRE_DOM_PLACEHOLDER
                 },
                 {
@@ -270,8 +273,8 @@ define(function (require) {
                 auto: true,
                 dnd: elems.wrap,
                 paste: elems.wrap,
-                swf: '/src/swf/Uploader.swf',
-                imgPrevSwf: '/src/swf/showPicDemo.swf',
+                swf: CONSTS.SWF_SHOW_PIC,
+                imgPrevSwf: CONSTS.SWF_UPLOADER,
                 chunked: false,
                 chunkSize: 512 * 1024,
                 sendAsBinary: true,
@@ -289,6 +292,8 @@ define(function (require) {
                 // 2 M
                 fileSingleSizeLimit: 2 * 1024 * 1024
             };
+
+            this.opts = $.extend(true, {}, this.defaultOpts, opts);
 
             // 添加的文件数量
             this.fileCount = 0;
@@ -312,6 +317,9 @@ define(function (require) {
             // 上传成功后的文件信息
             this.uploadedFiles = {};
 
+            // 混入事件对象
+            Emitter.mixin(this);
+
             this.render();
         },
 
@@ -322,8 +330,6 @@ define(function (require) {
          */
         render: function () {
             var main = this.elements.main;
-
-            this.opts = $.extend(true, {}, this.defaultOpts, this.opts);
 
             if (!this.uploader) {
                 this.uploader = WebUploader.create(this.opts);
@@ -360,11 +366,11 @@ define(function (require) {
             var elems = this.elements;
 
             if (!elems.queue.find('li').size()) {
-                elems.placeHolder.height('auto');
+                elems.placeholder.height('auto');
             }
             else {
                 elems.queue.show();
-                elems.placeHolder.height(0);
+                elems.placeholder.height(0);
             }
         },
 
@@ -504,17 +510,25 @@ define(function (require) {
 
             // 开始上传
             uploader.onStartUpload = function () {
-                if (self.opts.onStart) {
-                    self.opts.onStart();
-                }
+                /**
+                 * 发射开始上传事件
+                 *
+                 * @event Uploader#start
+                 */
+                self.emit('start');
             };
 
             // 全部文件上传完成
             uploader.onUploadFinished = function () {
                 var files = self.getUploadedFiles();
-                if (self.opts.onFinished) {
-                    self.opts.onFinished(files);
-                }
+
+                /**
+                 * 发射上传完成事件
+                 *
+                 * @event Uploader#finished
+                 * @param {Object} files 文件列表
+                 */
+                self.emit('finished', files);
             };
 
             // all
@@ -995,10 +1009,10 @@ define(function (require) {
 
             // 构造file列表，将图片地址放入每个file中
             $.each(imgArr, function (i, item) {
-                files[i] = {};
                 var randomStr = lib.randomString(16);
 
-                files[i] = {
+                // 构造file对象，存放已上传的文件
+                var file = {
                     /* eslint-disable */
                     __hash: randomStr,
                     /* eslint-enable */
@@ -1013,15 +1027,14 @@ define(function (require) {
                     },
                     setStatus: function () {}
                 };
-            });
 
-            // 设置每个file为上传完毕状态
-            $.each(files, function (i, file) {
                 self.fileCount++;
                 if (self.fileCount === 1) {
                     self.elements.statusBar.show();
                 }
+
                 self.addFile(file);
+
                 self.setState(UPLOARD_STATUS.FINISH);
 
                 // 重置上传数量
@@ -1040,6 +1053,8 @@ define(function (require) {
                     info: file.key
                 };
 
+                files.push(file);
+
                 // 样式更新
                 self.refreshStyle();
             });
@@ -1051,8 +1066,8 @@ define(function (require) {
          * @private
          */
         unbindDomEvent: function () {
-            this.elements.upload.unbind('click');
-            this.elements.info.unbind('click');
+            this.elements.upload.off('click');
+            this.elements.info.off('click');
         },
 
         /**
