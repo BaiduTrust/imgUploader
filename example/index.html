@@ -45,6 +45,9 @@ require(['main'], function (Uploader) {
         uploader = new Uploader({
             main: '#uploader',
             server: './fileuploadajax.php',
+            // swfPath: '../src/swf',
+            // swfPath: '/src/swf',
+            // swfPath: require.toUrl('swf'),
             fileNumLimit: 3
         });
 

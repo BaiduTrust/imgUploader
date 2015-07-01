@@ -24,9 +24,9 @@ define(function (require) {
         // flash文件id前缀
         SWF_ID_PRE: 'img-pref',
         // 展示图片swf
-        SWF_SHOW_PIC: require.toUrl('./swf/Uploader.swf'),
+        SWF_UPLOADER: require.toUrl('./swf/Uploader.swf'),
         // 上传swf
-        SWF_UPLOADER: require.toUrl('./swf/showPicDemo.swf')
+        SWF_SHOW_PIC: require.toUrl('./swf/showPicDemo.swf')
     };
 
     /**
@@ -164,6 +164,7 @@ define(function (require) {
      * @param {string} opts.server 后端上传图片地址
      * @fires Uploader#start 上传开始
      * @fires Uploader#finished 上传完成
+     * @fires Uploader#error 上传错误
      */
     function Uploader(opts) {
         return this.init(opts);
@@ -273,8 +274,8 @@ define(function (require) {
                 auto: true,
                 dnd: elems.wrap,
                 paste: elems.wrap,
-                swf: CONSTS.SWF_SHOW_PIC,
-                imgPrevSwf: CONSTS.SWF_UPLOADER,
+                swf: CONSTS.SWF_UPLOADER,
+                imgPrevSwf: CONSTS.SWF_SHOW_PIC,
                 chunked: false,
                 chunkSize: 512 * 1024,
                 sendAsBinary: true,
@@ -548,6 +549,14 @@ define(function (require) {
 
             uploader.onError = function (code) {
                 self.showUploadErrorTip(code);
+
+                /**
+                 * 发射上传错误事件
+                 *
+                 * @event Uploader#error
+                 * @param {Object} code 错误代码
+                 */
+                self.emit('error', code);
             };
         },
 
