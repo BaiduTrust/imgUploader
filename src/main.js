@@ -138,7 +138,7 @@ define(function (require) {
     // 如果不支持base64，改用flash预览
     var filePrevPool = {};
 
-    if (lib.isSupportBase64) {
+    if (!lib.isSupportBase64) {
         window.onFlashReady = function (id) {
             if (id && filePrevPool[id]) {
                 lib.getSwfMovie(id).showPic(filePrevPool[id].replace(/data:image\/.*;base64,/, ''));
@@ -693,7 +693,7 @@ define(function (require) {
                                 return;
                             }
 
-                            if (lib.isSupportBase64) {
+                            if (!lib.isSupportBase64) {
                                 var hash = +new Date();
                                 var id = CONSTS.SWF_ID_PRE + hash;
 
