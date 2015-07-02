@@ -121,7 +121,7 @@ define(function (require) {
         // 上传列表
         FILE_LIST: ''
             + '<li id="${id}">'
-            +     '<p class="imgWrap"></p>'
+            +     '<p class="img-wrap"></p>'
             +     '<p class="progress" style="display:none;">'
             +         '<span class="text">0%</span>'
             +         '<span class="percent"></span>'
@@ -663,7 +663,7 @@ define(function (require) {
             var btns = $(btnsHtml).appendTo(li);
 
             var progress = li.find('p.progress');
-            var wrap = li.find('p.imgWrap');
+            var wrap = li.find('p.img-wrap');
             var info = $('<p class="error"></p>');
 
             // 是否是已经上传的图片
