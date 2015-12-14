@@ -93,7 +93,7 @@ define(function (require) {
      * @public
      * @return {boolean} 支持状态
      */
-    lib.supportTransition = function () {
+    lib.supportTransition = (function () {
         var s = document.createElement('p').style;
         var r = 'transition' in s
             || 'WebkitTransition' in s
@@ -102,7 +102,7 @@ define(function (require) {
             || 'OTransition' in s;
         s = null;
         return r;
-    };
+    })();
 
     /**
      * 浏览器判断及版本
