@@ -85,7 +85,7 @@ define(function (require) {
      * @type {Object}
      */
     var MSG = {
-        BROWSER_TOO_OLD: '您的浏览器版本过低！',
+        BROWSER_TOO_OLD: '您的浏览器版本过低，或Flash异常！',
         CHOOSE_IMG: '点击选择图片',
         ADD_IMG: '继续添加',
         START_TO_UPLOAD: '开始上传',

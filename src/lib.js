@@ -142,7 +142,7 @@ define(function (require) {
      * @public
      * @return {boolean} 是否支持base64
      */
-    lib.isSupportBase64 = function () {
+    lib.isSupportBase64 = (function () {
         var data = new Image();
         var support = true;
 
@@ -153,7 +153,7 @@ define(function (require) {
         };
         data.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
         return support;
-    };
+    })();
 
     /**
      * 选中图片
